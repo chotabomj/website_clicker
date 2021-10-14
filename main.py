@@ -50,9 +50,7 @@ def main():
     sheet = workbook.active
     users_json = create_users_json(sheet, header)
     print(users_json)
-    # users = json.loads(users_json)
-    # print(users['0']['login'])
-    # print(users)
+
 
 
 if __name__ == '__main__':
