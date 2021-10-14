@@ -55,9 +55,6 @@ def main():
     user_indexes = get_column_indexes(sheet) 
     users_json = create_users_json(sheet, user_indexes)
     print(users_json)
-    # users = json.loads(users_json)
-    # print(users['0']['login'])
-    # print(users)
 
 
 if __name__ == '__main__':
