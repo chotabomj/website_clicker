@@ -30,19 +30,19 @@ def create_users_json(sheet, header):
     users = {}
     user = {}
     user_id = 0
-    header_row, user_indexes = get_row_indexes(sheet, header) 
+    header_row, user_header_indexes = get_row_indexes(sheet, header) 
     start_row = header_row + 1           # первая строчка после шапки    
     for row in sheet.iter_rows(min_row=start_row, values_only=True):
         row = get_tuple_to_lowercase(row)
         for column_name in header:
-            user[column_name] = row[user_indexes[column_name]]
-        users[user_id] = user    
+            user[column_name] = row[user_header_indexes[column_name]]
+        users[user_id] = user.copy()
         user_id += 1 
     return json.dumps(users, indent=4, ensure_ascii=False)
         
     
 def main():
-    header = ('логин','пароль','пол','возраст')
+    header = ('логин','пароль','пол', 'возраст')
     
     # filename in another directory?
     FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
