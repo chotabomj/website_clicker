@@ -1,5 +1,8 @@
 import json
+import os
 from openpyxl import load_workbook
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 # function restrictions?
 def get_tuple_to_lowercase (input_tuple : tuple):   
@@ -42,14 +45,49 @@ def create_users_json(sheet, header):
         
     
 def main():
-    header = ('логин','пароль','пол', 'возраст')
+
+    # формирование json файла
+
+    # header = ('логин','пароль','пол', 'возраст')
+    # FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
+    # workbook = load_workbook(filename=FILENAME, read_only=True, data_only=True)
+    # sheet = workbook.active
+    # users_json = create_users_json(sheet, header)
+    # users_json_dict = json.loads(users_json)
     
-    # filename in another directory?
-    FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
-    workbook = load_workbook(filename=FILENAME, read_only=True, data_only=True)
-    sheet = workbook.active
-    users_json = create_users_json(sheet, header)
-    print(users_json)
+
+
+
+    # web scraping 
+
+    options = Options()
+    options.headless = False
+    options.add_argument("--window-size=800,600")
+
+    DRIVER_NAME = 'chromedriver.exe'
+    PAGE_NAME = 'http://39.soctest.ru'
+    DRIVER_PATH = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(DRIVER_NAME), DRIVER_NAME))
+
+    driver = webdriver.Chrome(options = options, executable_path=DRIVER_PATH) 
+    driver.get(PAGE_NAME)
+
+    # login_input = driver.find_element_by_xpath('//*[@id="test_user_login"]')
+    # login_input.send_keys(users_json_dict['0']['логин'])
+    # password_input = driver.find_element_by_xpath('//*[@id="test_user_password"]')
+    # password_input.send_keys(users_json_dict['0']['пароль'])
+
+
+
+    # enter_button = driver.find_element_by_xpath('//button[text()="Войти"]')
+    # enter_button.click()
+
+    inputs = driver.find_elements_by_xpath('//input')
+    
+    
+    driver.quit()   
+
+    
+
 
 
 if __name__ == '__main__':
