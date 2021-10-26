@@ -1,5 +1,5 @@
 # website_clicker
-###reqs:  
+### reqs:   
 chrome  
 chrome driver binary:  
 https://sites.google.com/a/chromium.org/chromedriver/downloads  
