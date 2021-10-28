@@ -2,7 +2,6 @@ import json
 import os
 from openpyxl import load_workbook
 from selenium import webdriver
-import selenium
 from selenium.webdriver.chrome.options import Options
 
 # function restrictions?
@@ -40,55 +39,22 @@ def create_users_json(sheet, header):
         row = get_tuple_to_lowercase(row)
         for column_name in header:
             user[column_name] = row[user_header_indexes[column_name]]
-        user['completed'] = False
         users[user_id] = user.copy()
         user_id += 1 
-    return users
-
- 
+    return json.dumps(users, indent=4, ensure_ascii=False)
+        
     
 def main():
-    #список файлов в папке? 
-    # JSON_FILE_PATH = 'files/answers-v1.json'
-    # json_file_path = os.path.realpath(os.path.join(os.getcwd(), JSON_FILE_PATH))
-    # with open(json_file_path, 'r', encoding='utf-8') as f:
-    #     data = json.load(f)
-    # # print(data)    
-    # for element in reversed(data['questions']):
-    #     print(element)
-    #     data['questions'].remove(element)
-    # print(len(data['questions']))
 
     # формирование json файла
-    
-    CURRENT_DIR = os.path.realpath(os.getcwd())
-    json_exists = False
-    
-    #должно стоять перед циклом for
-    if not json_exists:
-        header = ('логин','пароль','пол', 'возраст')
-        FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
-        workbook = load_workbook(filename=FILENAME, read_only=True, data_only=True)
-        sheet = workbook.active
-        users_json = create_users_json(sheet, header)
-        with open('users.json' , 'w', encoding='utf-8') as outfile:
-            json.dump(users_json, outfile)
-    
-    for File in os.listdir(CURRENT_DIR):
-        if File.endswith('.json'):
-            with open(File, 'r', encoding='utf-8') as json_file:
-                users_json_dict = json.load(json_file)
-            json_exists = True 
 
+    # header = ('логин','пароль','пол', 'возраст')
+    # FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
+    # workbook = load_workbook(filename=FILENAME, read_only=True, data_only=True)
+    # sheet = workbook.active
+    # users_json = create_users_json(sheet, header)
+    # users_json_dict = json.loads(users_json)
     
-            
-    
-
-    
-    # for x in users_json_dict:
-    #     print(x)
-    #     for elem in users_json_dict[x]:
-    #         print(users_json_dict[x].get(elem))
 
 
 
@@ -100,31 +66,25 @@ def main():
 
     DRIVER_NAME = 'chromedriver.exe'
     PAGE_NAME = 'http://39.soctest.ru'
+    DRIVER_PATH = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(DRIVER_NAME), DRIVER_NAME))
 
-    # # ??????????
-    DRIVER_PATH = os.path.realpath(os.path.join(os.getcwd(), DRIVER_NAME))
     driver = webdriver.Chrome(options = options, executable_path=DRIVER_PATH) 
     driver.get(PAGE_NAME)
-    
-    # inputs = driver.find_elements_by_xpath('//input[not(@type="hidden")]')
 
-    # button.click()
+    # login_input = driver.find_element_by_xpath('//*[@id="test_user_login"]')
+    # login_input.send_keys(users_json_dict['0']['логин'])
+    # password_input = driver.find_element_by_xpath('//*[@id="test_user_password"]')
+    # password_input.send_keys(users_json_dict['0']['пароль'])
 
-    login_input = driver.find_element_by_xpath('//*[@id="test_user_login"]')
-    print(not login_input.get_attribute('value'))
-    login_input.send_keys(users_json_dict['0']['логин'])
-    print(login_input.get_attribute('value'))
-
-    password_input = driver.find_element_by_xpath('//*[@id="test_user_password"]')
-    password_input.send_keys(users_json_dict['0']['пароль'])
 
 
     # enter_button = driver.find_element_by_xpath('//button[text()="Войти"]')
     # enter_button.click()
 
-    # inputs = driver.find_elements_by_xpath('//input')
+    inputs = driver.find_elements_by_xpath('//input')
     
-    # driver.quit()   
+    
+    driver.quit()   
 
     
 
