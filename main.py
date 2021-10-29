@@ -4,7 +4,6 @@ from openpyxl import load_workbook
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-# function restrictions?
 def get_tuple_to_lowercase (input_tuple : tuple):   
     result_tuple = tuple(item.lower() if type(item) is str else item for item in input_tuple) 
     return result_tuple
@@ -39,56 +38,53 @@ def create_users_json(sheet, header):
         row = get_tuple_to_lowercase(row)
         for column_name in header:
             user[column_name] = row[user_header_indexes[column_name]]
+        user['completed'] = False
         users[user_id] = user.copy()
         user_id += 1 
-    return json.dumps(users, indent=4, ensure_ascii=False)
-        
+    return users
+    
     
 def main():
-
     # формирование json файла
-
-    # header = ('логин','пароль','пол', 'возраст')
-    # FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
-    # workbook = load_workbook(filename=FILENAME, read_only=True, data_only=True)
-    # sheet = workbook.active
-    # users_json = create_users_json(sheet, header)
-    # users_json_dict = json.loads(users_json)
+    CURRENT_DIR = os.path.realpath(os.getcwd())
+    json_exists = False
     
-
-
+    #должно стоять перед циклом
+    if not json_exists:
+        header = ('логин','пароль','пол', 'возраст')
+        FILENAME = '392515-0019-7e.xlsx' # добавить аргумент скрипта | единственный файл 
+        workbook = load_workbook(filename=FILENAME, read_only=True, data_only=True)
+        sheet = workbook.active
+        users_json = create_users_json(sheet, header)
+        with open('users.json' , 'w', encoding='utf-8') as outfile:
+            json.dump(users_json, outfile)
+    
+    for File in os.listdir(CURRENT_DIR):
+        if File.endswith('.json'):
+            with open(File, 'r', encoding='utf-8') as json_file:
+                users_json_dict = json.load(json_file)
+            json_exists = True 
 
     # web scraping 
-
     options = Options()
     options.headless = False
     options.add_argument("--window-size=800,600")
 
     DRIVER_NAME = 'chromedriver.exe'
     PAGE_NAME = 'http://39.soctest.ru'
-    DRIVER_PATH = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(DRIVER_NAME), DRIVER_NAME))
 
+    DRIVER_PATH = os.path.realpath(os.path.join(os.getcwd(), DRIVER_NAME))
     driver = webdriver.Chrome(options = options, executable_path=DRIVER_PATH) 
     driver.get(PAGE_NAME)
 
-    # login_input = driver.find_element_by_xpath('//*[@id="test_user_login"]')
-    # login_input.send_keys(users_json_dict['0']['логин'])
-    # password_input = driver.find_element_by_xpath('//*[@id="test_user_password"]')
-    # password_input.send_keys(users_json_dict['0']['пароль'])
+    login_input = driver.find_element_by_xpath('//*[@id="test_user_login"]')
+    login_input.send_keys(users_json_dict['0']['логин'])
 
+    password_input = driver.find_element_by_xpath('//*[@id="test_user_password"]')
+    password_input.send_keys(users_json_dict['0']['пароль'])
 
-
-    # enter_button = driver.find_element_by_xpath('//button[text()="Войти"]')
-    # enter_button.click()
-
-    inputs = driver.find_elements_by_xpath('//input')
-    
-    
     driver.quit()   
 
     
-
-
-
 if __name__ == '__main__':
     main()
